@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+</head>
+<body>
+<header>
+  <%- include('./header') %>
+</header>
+<main>
+  <div class="row justify-content-center mb-2">
+    <div class="col-md-12">
+      <table class="table">
+        <thead>
+            <tr>
+              <% for(let i=0; i<context.length; i++) { %>
+                <th scope="col"><%= context[i].stationName %></th>
+              <% } %>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+              <% for(let i=0; i<context.length; i++) { %>
+                <td><%= context[i].pm10Value %></td>
+              <% } %>
+            </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center mb-2">
+    <div class="col-md-8">
+      <canvas id="myChart"></canvas>
+    </div>
+  </div>
+</main>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script>
+  var context = JSON.parse('<%- JSON.stringify(context) %>');
+  var label = new Array();
+  var pm10 = new Array();
+  
+    for(let i=0; i<context.length; i++) { 
+      label.push(context[i].stationName);
+      pm10.push(context[i].pm10Value);
+    }
+    
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'bar',
+
+    // The data for our dataset
+    data: {
+        labels: label,
+        datasets: [{
+            label: '미세먼지 수치',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: pm10
+        }], 
+    },
+
+    // Configuration options go here
+    options: {}
+  });
+  </script>
+
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <style>
+      #map { width: 100%; height: 800px; }
+    </style>
+  </head>
+  <body>
+    <header>
+        <%- include('./header') %>
+    </header>
+	<main class="container">
+      <div class="row my-3">
+        <div class="col-3">
+          <select class="form-select" id="provider" onchange="Search(this)">
+            <option value="ALL" <%= provider === 'ALL' ? 'selected' : '' %>>전체</option>
+            <option value="SKT" <%= provider === 'SKT' ? 'selected' : '' %>>SKT</option>
+            <option value="KT" <%= provider === 'KT' ? 'selected' : '' %>>KT</option>
+            <option value="LGU+" <%= provider === 'LGU+' ? 'selected' : '' %>>LGU+</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="map"></div>
+    </main>
+
+<script>
+    function Search(sel) {
+        const provider = sel.value;
+        window.location.href = provider === "ALL" ? "/wifi" : "/wifi/" + provider;
+    }
+
+    const wifiData = <%- JSON.stringify(wifiData) %>;
+
+    const map = L.map('map').setView([wifiData[0].latitude, wifiData[0].longitude], 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      for (let i = 0; i < wifiData.length; i++) {
+        const marker = L.marker([wifiData[i].latitude, wifiData[i].longitude]).addTo(map);
+        marker.bindPopup(wifiData[i].inst_loc);
+      }
+    </script>
+  </body>
+</html>
