@@ -9,11 +9,10 @@ services:
     volumes:
       - ./app:/app                 # 호스트 App 폴더를 컨테이너 /app에 마운트
     depends_on:                    # 실행 의존성 
-      - db                         # db 컨테이너가 실행된 이후 실행    
-    environment:
-      - DATABASE_URL=postgresql://admin:admin@db:5432/mydb # FastAPI가 사용할 DB 연결 정보
+      db:                        # db 컨테이너가 실행된 이후 실행    
+        condition: service_healthy # db 컨테이너가 건강 상태일 때만 실행
     env_file:
-      - .env                       # 환경 변수수
+      - .env                       # 환경 변수
 
   db:
     image: postgres:15
@@ -23,8 +22,23 @@ services:
       - "5432:5432"                # 호스트:컨테이너 포트 매핑
     volumes:
       - pgdata:/var/lib/postgresql/data  # 데이터 유지용 볼륨 (DB 파일 저장)
+    healthcheck:  # 헬스 체크 설정
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     env_file:
       - .env                       # 환경 변수
 
+  ollama:
+    image: ollama/ollama
+    container_name: ollama-server
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: always
+
 volumes:
-  pgdata:                          # pgdata 볼륨 정의
+  pgdata:                         # pgdata 볼륨 정의
+  ollama_data:                    # ollama_data 볼륨 정의

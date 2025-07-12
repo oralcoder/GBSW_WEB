@@ -2,4 +2,11 @@ fastapi
 jinja2
 uvicorn
 psycopg2-binary
+sqlalchemy
 python-dotenv
+pydantic
+pydantic[email]
+python-multipart 
+passlib[bcrypt] 
+openai
+google-genai

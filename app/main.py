@@ -1,21 +1,14 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from db import get_connection
+from fastapi import FastAPI
+from routes import index, user, ai
+from core.init_database import create_tables
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
 
-@app.get("/", response_class=HTMLResponse)
-async def root(request: Request):
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute("SELECT version();")
-    version = cur.fetchone()[0]
-    cur.close()
-    conn.close()
-    return templates.TemplateResponse("index.html", {
-        "request": request, 
-        "message": "Hello from host → container",
-        "db_version": version
-    })
+@app.on_event("startup")
+def startup_event():
+    create_tables()
+    print("데이터베이스 테이블 초기화 완료")
+
+app.include_router(index.router) # / -> index router
+app.include_router(user.router, prefix="/user") # /user -> user router
+app.include_router(ai.router, prefix="/ai") # /ai -> ai router
