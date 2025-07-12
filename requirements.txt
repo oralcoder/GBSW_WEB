@@ -10,3 +10,7 @@ python-multipart
 passlib[bcrypt] 
 openai
 google-genai
+pgvector
+sentence-transformers
+pymupdf
+einops
